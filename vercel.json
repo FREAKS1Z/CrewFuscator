@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "api/**/*.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
     },
     {
       "src": "index.html",
@@ -20,11 +23,6 @@
       "dest": "/$1"
     }
   ],
-  "functions": {
-    "api/obfuscate.js": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }
