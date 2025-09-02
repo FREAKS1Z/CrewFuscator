@@ -21,7 +21,7 @@ local function parseJSON(str)
 end
 
 -- Import your obfuscation modules (using your exact file names)
-local VariableRenamer = require('modules.Variable_renemer') -- Note: your file has "renemer" not "renamer"
+local VariableRenamer = require('modules.Variable_renamer') -- Note: your file has "renemer" not "renamer"
 local StringEncoder = require('modules.String_Encoder')
 local AntiTamper = require('modules.Anti_tamper')
 local ControlFlow = require('modules.Control_flow')
