@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrewFuscator - Roblox Script Obfuscator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .github-link {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .github-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Interface */
+        .obfuscator-interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-panel, .output-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .char-count {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .code-textarea {
+            width: 100%;
+            height: 400px;
+            background: #1a1a1a;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .code-textarea:focus {
+            border-color: #00d4ff;
+        }
+
+        .code-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .obfuscation-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #00d4ff;
+        }
+
+        .option label {
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4757, #c44569);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Status Panel */
+        .status-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .status-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00d4ff;
+        }
+
+        .status-icon.processing {
+            background: #ffa502;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-icon.success {
+            background: #2ed573;
+        }
+
+        .status-icon.error {
+            background: #ff4757;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Features Info */
+        .features-info {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+        }
+
+        .feature-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .obfuscator-interface {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .obfuscation-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .code-textarea {
+                height: 300px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>CrewFuscator</h1>
+            <p>Advanced Roblox Script Obfuscator - Protect Your Scripts from Skidders</p>
+            <a href="https://github.com/FREAKS1Z/CrewFuscator" target="_blank" class="github-link">
+                📁 View Source on GitHub
+            </a>
+        </div>
+
+        <!-- Status Panel -->
+        <div class="status-panel">
+            <div class="status" id="status">
+                <div class="status-icon" id="statusIcon"></div>
+                <span id="statusText">Ready to obfuscate your script</span>
+            </div>
+        </div>
+
+        <!-- Main Interface -->
+        <div class="obfuscator-interface">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <div class="panel-header">
+                    <div class="panel-title">📝 Input Script</div>
+                    <div class="char-count" id="inputCount">0 characters</div>
+                </div>
+                <textarea 
+                    class="code-textarea" 
+                    id="inputCode" 
+                    placeholder="-- Paste your Lua script here...
+-- Example:
+local playerHealth = 100
+local playerName = 'FREAKS1Z'
+
+function healPlayer()
+    playerHealth = playerHealth + 50
+    print(playerName .. ' healed!')
+end
+
+healPlayer()"
+                ></textarea>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="output-panel">
+                <div class="panel-header">
+                    <div class="panel-title">🔒 Obfuscated Output</div>
+                    <div class="char-count" id="outputCount">0 characters</div>
+                </div>
+                <textarea 
+                    class="code-textarea" 
+                    id="outputCode" 
+                    placeholder="-- Obfuscated code will appear here..."
+                    readonly
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="controls-grid">
+                <!-- Obfuscation Options -->
+                <div class="obfuscation-options">
+                    <div class="option">
+                        <input type="checkbox" id="variableRename" checked>
+                        <label for="variableRename">Variable Renaming</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="stringEncode" checked>
+                        <label for="stringEncode">String Encoding</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="antiTamper" checked>
+                        <label for="antiTamper">Anti-Tamper</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="controlFlow" checked>
+                        <label for="controlFlow">Control Flow</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="compression" checked>
+                        <label for="compression">Compression</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="garbageCode" checked>
+                        <label for="garbageCode">Garbage Code</label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="obfuscateBtn">
+                        🔒 Obfuscate Script
+                    </button>
+                    <button class="btn btn-secondary" id="copyBtn" disabled>
+                        📋 Copy Output
+                    </button>
+                    <button class="btn btn-secondary" id="downloadBtn" disabled>
+                        💾 Download
+                    </button>
+                    <button class="btn btn-danger" id="clearBtn">
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Animation -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Obfuscating your script...</p>
+        </div>
+
+        <!-- Features Info -->
+        <div class="features-info">
+            <h3 style="margin-bottom: 15px; color: #00d4ff;">🛡️ Protection Features</h3>
+            <div class="features-grid">
+                <div class="feature">
+                    <span class="feature-icon">🔄</span>
+                    <span>Variable Renaming & Scrambling</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🎭</span>
+                    <span>String Encryption & Encoding</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⚡</span>
+                    <span>Control Flow Obfuscation</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🛡️</span>
+                    <span>Anti-Tampering Protection</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">💾</span>
+                    <span>Code Compression</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🗑️</span>
+                    <span>Garbage Code Insertion</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const inputCode = document.getElementById('inputCode');
+        const outputCode = document.getElementById('outputCode');
+        const obfuscateBtn = document.getElementById('obfuscateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const inputCount = document.getElementById('inputCount');
+        const outputCount = document.getElementById('outputCount');
+        const status = document.getElementById('status');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const loading = document.getElementById('loading');
+
+        // Character counters
+        function updateCharCount() {
+            inputCount.textContent = `${inputCode.value.length} characters`;
+            outputCount.textContent = `${outputCode.value.length} characters`;
+        }
+
+        inputCode.addEventListener('input', updateCharCount);
+
+        // Status updates
+        function updateStatus(type, message) {
+            statusIcon.className = `status-icon ${type}`;
+            statusText.textContent = message;
+        }
+
+        // Real obfuscation using API
+        async function obfuscateWithAPI(input, options) {
+            const response = await fetch('/api/obfuscate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code: input,
+                    options: options
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Server error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.error || 'Obfuscation failed');
+            }
+
+            return result.obfuscated;
+        }
+
+        // Obfuscation function
+        async function obfuscateScript() {
+            const input = inputCode.value.trim();
+            
+            if (!input) {
+                updateStatus('error', 'Please enter a script to obfuscate');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            obfuscateBtn.disabled = true;
+            updateStatus('processing', 'Obfuscating script...');
+
+            // Get selected options
+            const options = {
+                variableRename: document.getElementById('variableRename').checked,
+                stringEncode: document.getElementById('stringEncode').checked,
+                antiTamper: document.getElementById('antiTamper').checked,
+                controlFlow: document.getElementById('controlFlow').checked,
+                compression: document.getElementById('compression').checked,
+                garbageCode: document.getElementById('garbageCode').checked
+            };
+
+            try {
+                // Call the API backend to obfuscate using your Lua modules
+                const obfuscated = await obfuscateWithAPI(input, options);
+                
+                outputCode.value = obfuscated;
+                copyBtn.disabled = false;
+                downloadBtn.disabled = false;
+                updateStatus('success', 'Script obfuscated successfully!');
+                updateCharCount();
+            } catch (error) {
+                updateStatus('error', 'Obfuscation failed: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                obfuscateBtn.disabled = false;
+            }
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(outputCode.value);
+                updateStatus('success', 'Code copied to clipboard!');
+            } catch (error) {
+                updateStatus('error', 'Failed to copy to clipboard');
+            }
+        }
+
+        // Download as file
+        function downloadFile() {
+            const content = outputCode.value;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'obfuscated_script.lua';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            updateStatus('success', 'File downloaded successfully!');
+        }
+
+        // Clear all
+        function clearAll() {
+            inputCode.value = '';
+            outputCode.value = '';
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            updateStatus('', 'Ready to obfuscate your script');
+            updateCharCount();
+        }
+
+        // Event listeners
+        obfuscateBtn.addEventListener('click', obfuscateScript);
+        copyBtn.addEventListener('click', copyToClipboard);
+        downloadBtn.addEventListener('click', downloadFile);
+        clearBtn.addEventListener('click', clearAll);
+
+        // Initialize
+        updateCharCount();
+        updateStatus('', 'Ready to obfuscate your script');
+    </script>
+</body>
+</html>
