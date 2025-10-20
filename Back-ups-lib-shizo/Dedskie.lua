@@ -1,12 +1,23 @@
 --[[
 
+it's simple library but i can make it better soon :)
+
 example
 
-local GUILib = require(script.GUILib)
+local CoreGui = game:GetService("StarterGui")
+
+CoreGui:SetCore("SendNotification", {
+    Title = "Script Made By",
+    Text = "Shizoscript & ClickManteam",
+    Icon = "rbxassetid://14307252060",
+    Duration = 2,
+})
+
+local GUILib = loadstring(game:HttpGet("https://raw.githubusercontent.com/FREAKS1Z/CrewFuscator/refs/heads/main/Back-ups-lib-shizo/Dedskie.lua"))()
 
 local win = GUILib:CreateWindow({
     title = "My Script",
-    credits = "Made by Me"
+    credits = "Made by Me" -- you can use this will be on bottom of the gui
 })
 
 win:AddLabel({
